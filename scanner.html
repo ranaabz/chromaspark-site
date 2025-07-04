@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Brand Vulnerability Scanner</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&family=JetBrains+Mono&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <link rel="icon" type="image/png" href="Chromaspark.png.jpeg">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'JetBrains Mono', monospace;
+      background-color: #05013d;
+      color: #fdb43b;
+    }
+    header {
+      text-align: center;
+      padding: 2rem;
+      background: linear-gradient(to right, #05013d, #fdb43b);
+    }
+    header h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem;
+      color: #05013d;
+      letter-spacing: 2px;
+    }
+    main {
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+      background-color: #1a1a1a;
+      border-radius: 8px;
+      box-shadow: 0 0 15px #00ffcc33;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      margin-top: 0.5rem;
+      padding: 0.75rem;
+      background-color: #111;
+      color: #fdb43b;
+      border: 1px solid #fdb43b;
+      border-radius: 4px;
+    }
+    button {
+      margin-top: 1.5rem;
+      padding: 0.75rem 1.5rem;
+      background-color: #fdb43b;
+      color: #000;
+      font-weight: bold;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .results {
+      display: none;
+      margin-top: 2rem;
+      background: #111;
+      padding: 1rem;
+      border: 1px solid#fdb43b;
+      border-radius: 6px;
+    }
+    .results h2 {
+      color: #fdb43b;
+    }
+    .score {
+      font-size: 1.2rem;
+      color: #ff3c38;
+    }
+    canvas {
+      margin-top: 2rem;
+    }
+    #downloadBtn {
+      margin-top: 1rem;
+      background-color: #fdb43b;
+      color: #000;
+    }
+
+    .navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.navbar-logo {
+  font-family: 'Arial';
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-decoration: none;
+  color: white;
+  display: flex;
+  align-items: center;
+}
+
+/* Logo image styling */
+.navbar-logo-img {
+  width: 100px;
+  height: 100px;
+  margin-right: 10px;
+  border-radius: 300px;
+}
+
+.navbar-links {
+  font-family: 'Arial';
+  list-style: none;
+  display: flex;
+  gap: 20px;
+}
+
+.navbar-links li {
+  display: inline;
+}
+
+.navbar-links a {
+  text-decoration: none;
+  color: white;
+  font-size: 1.1rem;
+  padding: 8px 15px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.navbar-links a:hover {
+  background-color: #fdb43b;
+}
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+        <div class="navbar-container">
+          <a href="#home" class="navbar-logo">
+            <!-- Adding the image next to the text -->
+            <img src="Chromaspark.png.jpeg" alt="Chroma Spark Logo" class="navbar-logo-img">
+            Chroma Spark
+          </a>
+          <ul class="navbar-links">
+                <li><a href="SeniorProject.html">Back To Home</a></li>
+          </ul>
+            <div class="menu-toggle" id="mobile-menu">
+                <span class="bar"></span>
+            </div>
+        </div>
+    </nav>
+  <header>
+  <h1>🔐 Brand Vulnerability Scanner</h1>
+  <p style="color: #fff; font-size: 1rem; margin-top: 1rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+    This tool helps you scan for design and security vulnerabilities in your logo and brand identity. A strong, secure, and attractive brand begins with a well-crafted logo — let's make sure yours stands out for the right reasons.
+  </p>
+</header>
+
+  <main>
+    <form id="scanForm">
+      <!-- Existing Questions -->
+      <label>Is your logo readable on mobile?</label>
+      <select name="mobile" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Are CTAs clearly visible?</label>
+      <select name="contrast" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Is your font size readable on all devices?</label>
+      <select name="font" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Are design elements consistent across pages?</label>
+      <select name="consistency" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Is your site using HTTPS?</label>
+      <select name="security" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Is your design accessible (alt text, contrast)?</label>
+      <select name="accessibility" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Is the loading speed optimized?</label>
+      <select name="loading" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Does your design follow a grid layout?</label>
+      <select name="grid" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Are your colors balanced and accessible?</label>
+      <select name="color" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Are animations smooth and purposeful?</label>
+      <select name="animation" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Are your icons meaningful and clear?</label>
+      <select name="icons" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <!-- Brand Security Questions -->
+      <label>Is your brand trademark registered?</label>
+      <select name="trademark_registered" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Do you monitor for unauthorized use of your brand assets?</label>
+      <select name="brand_monitoring" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Are your digital brand assets (logos, fonts) stored securely?</label>
+      <select name="asset_security" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Is access to your brand’s design files restricted to authorized personnel only?</label>
+      <select name="access_control" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Do you have a plan to respond to brand impersonation or phishing?</label>
+      <select name="brand_response_plan" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <!-- Additional Logo and Brand Identity Questions -->
+      <label>Is your logo unique and not easily confused with competitors?</label>
+      <select name="logo_uniqueness" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Does your logo scale well across different mediums (web, print, mobile)?</label>
+      <select name="logo_scalability" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Is your logo memorable and easily recognizable?</label>
+      <select name="logo_memorability" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Does your brand identity reflect your company’s mission and values?</label>
+      <select name="brand_alignment" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Do you use a consistent logo placement and usage guide?</label>
+      <select name="logo_guidelines" required>
+        <option value="yes">Yes</option>
+        <option value="no">No</option>
+      </select>
+
+      <label>Does your logo scale well to different sizes (e.g. social icons, billboards)?</label>
+<select name="logo_scalability" required>
+  <option value="yes">Yes</option>
+  <option value="no">No</option>
+</select>
+
+<label>Does your logo look good in black & white?</label>
+<select name="logo_bw" required>
+  <option value="yes">Yes</option>
+  <option value="no">No</option>
+</select>
+
+<label>Is your logo conceptually meaningful (does it tell a story)?</label>
+<select name="logo_meaning" required>
+  <option value="yes">Yes</option>
+  <option value="no">No</option>
+</select>
+
+<label>Does your visual identity reflect your target audience?</label>
+<select name="audience_alignment" required>
+  <option value="yes">Yes</option>
+  <option value="no">No</option>
+</select>
+
+<label>Do your logo and brand visuals stand out from competitors?</label>
+<select name="uniqueness" required>
+  <option value="yes">Yes</option>
+  <option value="no">No</option>
+</select>
+
+<label>Are your brand fonts consistent across print and digital materials?</label>
+<select name="font_consistency" required>
+  <option value="yes">Yes</option>
+  <option value="no">No</option>
+</select>
+
+<label>Is your brand identity documented in a style guide?</label>
+<select name="style_guide" required>
+  <option value="yes">Yes</option>
+  <option value="no">No</option>
+</select>
+
+<label>Do you regularly review or update your brand design?</label>
+<select name="brand_update" required>
+  <option value="yes">Yes</option>
+  <option value="no">No</option>
+</select>
+
+
+      <button type="submit">Run Scan</button>
+    </form>
+   
+    <div class="results" id="results">
+      <h2>🛡️ Vulnerability Report</h2>
+      <p class="score">Visual Trust Score: <span id="trustScore">--</span>%</p>
+      <div id="aiTips"></div>
+      <p>⏱️ Scan Timestamp: <span id="timestamp"></span></p>
+      <canvas id="radarChart"></canvas>
+      <button id="downloadBtn">📄 Download PDF Report</button>
+    </div>
+
+    <form id="logoForm" enctype="multipart/form-data">
+  <label>Upload Logo:</label>
+  <input type="file" name="logo" accept="image/*" required>
+  <button type="submit">Analyze</button>
+</form>
+<div id="logoResult" style="margin-top: 1rem;"></div>
+
+
+  </main>
+
+  <script>
+    const form = document.getElementById('scanForm');
+    const results = document.getElementById('results');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    const chartLabels = [
+      'Mobile Logo', 'CTA Visibility', 'Font Readability', 'Consistency', 'HTTPS',
+      'Accessibility', 'Speed', 'Grid Layout', 'Color Palette', 'Animation', 'Icons',
+      'Trademark Registered', 'Brand Monitoring', 'Asset Security', 'Access Control',
+      'Brand Response Plan', 'Logo Uniqueness', 'Logo Scalability', 'Logo Memorability',
+      'Brand Alignment', 'Logo Guidelines'
+    ];
+
+    let values = [];
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      values = [];
+
+      const fields = [
+        'mobile', 'contrast', 'font', 'consistency', 'security', 'accessibility',
+        'loading', 'grid', 'color', 'animation', 'icons',
+        'trademark_registered', 'brand_monitoring', 'asset_security', 'access_control',
+        'brand_response_plan', 'logo_uniqueness', 'logo_scalability',
+        'logo_memorability', 'brand_alignment', 'logo_guidelines', 'logo_scalability', 'logo_bw', 'logo_meaning', 'audience_alignment', 'uniqueness', 'font_consistency', 'style_guide', 'brand_update'
+
+      ];
+
+      let score = 100;
+      let feedback = [];
+
+      const labelMap = {
+        mobile: 'Logo Readability on Mobile',
+        contrast: 'CTA Visibility',
+        font: 'Font Readability',
+        consistency: 'Design Consistency',
+        security: 'HTTPS Usage',
+        accessibility: 'Accessibility',
+        loading: 'Loading Speed',
+        grid: 'Grid Layout',
+        color: 'Color Palette',
+        animation: 'Animations',
+        icons: 'Icons',
+        trademark_registered: 'Trademark Registration',
+        brand_monitoring: 'Brand Monitoring',
+        asset_security: 'Asset Security',
+        access_control: 'Access Control',
+        brand_response_plan: 'Brand Response Plan',
+        logo_uniqueness: 'Logo Uniqueness',
+        logo_scalability: 'Logo Scalability',
+        logo_memorability: 'Logo Memorability',
+        brand_alignment: 'Brand Alignment',
+        logo_guidelines: 'Logo Usage Guidelines',
+        logo_bw: 'Logo Black/White Compatibility',
+        logo_meaning: 'Logo Meaning',
+        audience_alignment: 'Target Audience Alignment',
+        uniqueness: 'Visual Uniqueness',
+        font_consistency: 'Font Consistency',
+        style_guide: 'Style Guide Presence',
+        brand_update: 'Brand Design Updates'
+
+      };
+
+      fields.forEach((field) => {
+        const value = form[field].value;
+        if (value === 'no') {
+          score -= 5;
+          feedback.push(`⚠️ ${labelMap[field]} needs attention.`);
+          values.push(50);
+        } else {
+          values.push(100);
+        }
+      });
+
+      document.getElementById('trustScore').textContent = score;
+      const aiSuggestions = generateAIRecommendations(score, feedback);
+      document.getElementById('aiTips').innerHTML = `<p>${aiSuggestions}</p>`;
+      document.getElementById('timestamp').textContent = new Date().toLocaleString();
+      results.style.display = 'block';
+
+      const ctx = document.getElementById('radarChart').getContext('2d');
+      if (window.radarChart) window.radarChart.destroy();
+      window.radarChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: chartLabels,
+          datasets: [{
+            label: 'Design Health',
+            data: values,
+            backgroundColor: 'rgba(0, 255, 136, 0.2)',
+            borderColor: '#00ff88',
+            borderWidth: 2,
+            pointBackgroundColor: '#00ff88'
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: { color: '#444' },
+              grid: { color: '#333' },
+              pointLabels: { color: '#ccc' },
+              ticks: {
+                color: '#00ffcc',
+                stepSize: 25,
+                backdropColor: 'transparent'
+              }
+            }
+          },
+          plugins: {
+            legend: { labels: { color: '#00ff88' } }
+          }
+        }
+      });
+    });
+
+    function generateAIRecommendations(score, feedbackList) {
+      if (score === 100) return '✅ Excellent! Your brand is visually strong and secure.';
+      if (score > 80) return '🔍 Great job! But consider optimizing:<br>' + feedbackList.join('<br>');
+      if (score > 60) return '⚠️ Moderate risks detected. Focus on improving:<br>' + feedbackList.join('<br>');
+      return '🚨 Critical vulnerabilities in visual identity. Immediate attention required:<br>' + feedbackList.join('<br>');
+    }
+
+    downloadBtn.addEventListener('click', async () => {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      doc.setFont('helvetica');
+      doc.setFontSize(14);
+      doc.text('Brand Vulnerability Scan Report', 10, 10);
+      doc.setFontSize(11);
+      doc.text(`Score: ${document.getElementById('trustScore').textContent}%`, 10, 20);
+      doc.text(`Time: ${document.getElementById('timestamp').textContent}`, 10, 30);
+
+      const feedbackText = document.getElementById('aiTips').innerText.split('\n');
+      let y = 40;
+      feedbackText.forEach(f => {
+        doc.text(f, 10, y);
+        y += 10;
+      });
+
+      doc.save('brand_scan_report.pdf');
+    });
+  // Logo form submission with AJAX
+  const logoForm = document.getElementById('logoForm');
+  const logoResult = document.getElementById('logoResult');
+
+  logoForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(logoForm);
+
+    fetch('segment_logo.php', {
+      method: 'POST',
+      body: formData
+    })
+    .then(res => res.text())
+    .then(data => {
+      logoResult.innerHTML = data; // Expecting HTML output (like <img src="..." />)
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      logoResult.innerHTML = "<p style='color:red;'>Error processing logo.</p>";
+    });
+  });
+
+  </script>
+</body>
+</html>

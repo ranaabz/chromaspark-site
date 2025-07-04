@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logo Guessing Game</title>
+    <link rel="icon" type="image/png" href="Chromaspark.png.jpeg">
+</head>
+<body>
+
+    <div class="intro">
+        <p>Are you ready to guess the following logos? Click "Next Logo" to move to the next logo or to skip the current one.</p>
+        <p>incase you dont know the logo you can reveal it by clicking on reveal button</p>
+        <p>Good luck! Enjoy 😊</p>
+    </div>
+
+    <div class="game-container">
+        <h1>Logo Guessing Game</h1>
+        <div class="logo-container">
+            <img id="logo" src="chrochet_by_jihan.jpeg" alt="Logo" />
+        </div>
+
+        <div class="hint">
+            <button id="revealLogo">Reveal Logo</button>
+        </div>
+
+        <div class="input-section">
+            <label for="guess">What's the brand?</label>
+            <input type="text" id="guess" placeholder="Enter your guess" />
+            <button id="submitGuess">Submit</button>
+        </div>
+
+        <div class="feedback">
+            <p id="message"></p>
+            <p>Score: <span id="score">0</span></p>
+        </div>
+
+        <button id="nextLogo">Next Logo</button>
+    </div>
+</body>
+</html>
+<style>
+    body {
+    font-family: Arial, sans-serif;
+    background-color: #fdb43b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
+.intro {
+    background-color: #05013d;
+    color: #fff;
+    padding: 15px;
+    margin-bottom: 10px;
+    width: 300px;
+    border-radius: 10px;
+    text-align: center;
+    position: absolute;  /* Allows positioning */
+    left: 10px;         /* Moves it 10px from the right */
+    margin-top: 10px;           /* Adjusts top position */
+    margin-left: 200px;
+}
+
+
+.game-container {
+    background-color: #fac775;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    width: 300px;
+    border-radius: 10px;
+}
+
+h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+}
+
+.logo-container img {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
+}
+
+.input-section input {
+    padding: 8px;
+    width: 80%;
+    margin-right: 5px;
+}
+
+button {
+    padding: 10px 15px;
+    background-color: #05013d;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color:#fdb43b;
+}
+
+#message {
+    font-size: 18px;
+    color: #05013d;
+}
+
+#nextLogo {
+    display: none;
+    background-color: #fdb43b;
+}
+.logo-container img {
+    width: 200px;
+    height: 200px;
+    margin-bottom: 20px;
+    filter: blur(10px); /* Initially blurred */
+}
+
+</style>
+<script>
+    // Logo data (you can replace with more logos and their names)
+const logos = [
+    { name: 'Apple', image: 'Apple_logo_black.svg' },
+    { name: 'Nike', image: 'nike-swoosh-logo.png' },
+    { name: 'McDonalds', image: 'macdonald.png' },
+    { name: 'Disney', image: 'disney.png' },
+    { name: 'Olampics', image: 'olampic.png' },
+    { name: 'Chanel', image: 'channel.png' },
+    { name: 'Cisco', image: 'cisco.svg' },
+    { name: 'Dodge', image: 'dodge.png' },
+    { name: 'Dreamworks', image: 'dream.png' },
+    { name: 'Windows', image: 'windows.png' },
+    { name: 'Cartoonet work', image: 'CN.PNG' },
+];
+
+
+let currentLogoIndex = 0;
+let score = 0;
+let guessCount = 0; // Track the number of guesses
+
+// Get elements
+const logoImage = document.getElementById('logo');
+const guessInput = document.getElementById('guess');
+const submitButton = document.getElementById('submitGuess');
+const message = document.getElementById('message');
+const scoreDisplay = document.getElementById('score');
+const nextButton = document.getElementById('nextLogo');
+const revealButton = document.getElementById('revealLogo');
+
+// Function to load the next logo
+// Function to load the next logo
+function loadLogo(index) {
+    const logo = logos[index];
+    logoImage.src = logo.image;
+    message.textContent = '';
+    guessInput.value = '';
+    nextButton.style.display = 'none';
+    logoImage.style.filter = 'blur(10px)'; // Apply blur
+    revealButton.style.display = 'inline-block'; // Show reveal button again
+}
+
+
+// Function to check the guess
+function checkGuess() {
+    const logo = logos[currentLogoIndex];
+    const guess = guessInput.value.trim().toLowerCase();
+
+    if (guess === logo.name.toLowerCase()) {
+        message.textContent = 'Correct!';
+        score += 10;
+    } else {
+        message.textContent = 'Incorrect! Try again.';
+    }
+
+    scoreDisplay.textContent = score;
+    guessCount++;
+
+    // After every 4 guesses, ask if they want to continue
+    if (guessCount % 4 === 0) {
+        const continueGame = confirm("Do you want to continue playing?");
+        if (!continueGame) {
+            // Optionally, redirect to another page or reset the game
+            alert("Thanks for playing!");
+            guessCount = 0; // Reset the guess count
+            currentLogoIndex = 0; // Start over
+            loadLogo(currentLogoIndex);
+            window.location.href = "client-dashboard.php"; // Update with the correct path
+            return;
+        }
+    }
+
+    nextButton.style.display = 'inline-block';
+}
+
+// Function to show the next logo
+function nextLogo() {
+    currentLogoIndex = (currentLogoIndex + 1) % logos.length;
+    loadLogo(currentLogoIndex);
+}
+
+// Event listeners
+submitButton.addEventListener('click', checkGuess);
+nextButton.addEventListener('click', nextLogo);
+
+// Reveal logo feature (optional)
+revealButton.addEventListener('click', function() {
+    logoImage.style.filter = 'none';
+    revealButton.style.display = 'none';
+});
+
+
+// Initial logo load
+loadLogo(currentLogoIndex);
+
+
+</script>

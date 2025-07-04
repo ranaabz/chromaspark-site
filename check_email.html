@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check Your Email</title>
+    <link rel="icon" type="image/png" href="Chromaspark.png.jpeg">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: linear-gradient(115deg, #0d0235, #fdb43b); /* Background gradient */
+            background-repeat: no-repeat;
+            background-size: cover;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            text-align: center;
+        }
+
+        .container {
+            background-color: rgba(255, 255, 255, 0.9); /* Optional: light background */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            max-width: 400px;
+        }
+
+        h2 {
+            color: #333;
+        }
+
+        p {
+            color: black;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            background-color: #e2f3ff;
+            border-left: 4px solid #fdb43b;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .button {
+            background-color: #0d0235;
+            color: #fff;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #fdb43b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Check Your Email</h2>
+
+        <!-- Message box that will update based on email verification status -->
+        <div class="message" id="messageBox">
+            <p>A verification email has been sent to your address. Please click the link in that email to verify your account.</p>
+        </div>
+
+        <p>If you don't see the email in your inbox, please check your spam or junk mail folder.</p>
+        <a href="login.php" class="button">Go to Login</a>
+    </div>
+
+    <script>
+        // Check the URL for a query parameter indicating successful email verification
+        const urlParams = new URLSearchParams(window.location.search);
+        const emailVerified = urlParams.get('verified');
+
+        window.onload = function() {
+            const messageBox = document.getElementById("messageBox");
+
+            if (emailVerified === 'true') {
+                // Change the message to the success message when email is verified
+                messageBox.innerHTML = '<p>✅ Your email has been successfully verified! You can now log in.</p>';
+                messageBox.style.backgroundColor = '#d4edda';  // Change background to success color
+                messageBox.style.borderLeftColor = '#28a745';  // Update the border color
+            }
+        };
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Manage Projects</title>
+    <link rel="icon" type="image/png" href="Chromaspark.png.jpeg">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin: 20px; background: url('admin2 wallpaper.jpg') no-repeat center/cover; background-attachment: fixed;}
+        .container { max-width: 600px; margin: auto; }
+        input, textarea, button { padding: 10px; margin: 5px; width: 90%; }
+        .project-list { margin-top: 20px; }
+        .project-item { display: flex; align-items: center; background: #f4f4f4; padding: 10px; margin: 10px 0; border-radius: 5px; }
+        .project-item img { width: 80px; height: 80px; object-fit: cover; margin-right: 10px; border-radius: 5px; }
+        .project-details { flex: 1; text-align: left; }
+        .edit, .delete { cursor: pointer; padding: 5px 10px; margin-left: 5px; }
+        .edit { background: #fdb43b; border: none; color: black; }
+        .delete { background: #dc3545; border: none; color: white; }
+    </style>
+</head>
+<body>
+
+    <h2>Admin Dashboard - Project Management</h2>
+
+    <div class="container">
+        <input type="text" id="projectName" placeholder="Enter project name">
+        <textarea id="projectDescription" placeholder="Enter project description"></textarea>
+        <input type="file" id="projectImage" accept="image/*" style="display: none;">
+        <button onclick="openFileExplorer()" style="background-color: #05013d; color: #f4f4f4;">Add Project</button>
+
+        <div class="project-list" id="projectList"></div>
+    </div>
+
+    <script>
+        function openFileExplorer() {
+            document.getElementById("projectImage").click();
+        }
+
+        document.getElementById("projectImage").addEventListener("change", function(event) {
+            let file = event.target.files[0]; 
+            if (!file) return;
+
+            let reader = new FileReader();
+            reader.onload = function(e) {
+                let projectName = document.getElementById("projectName").value || "Unnamed Project";
+                let projectDescription = document.getElementById("projectDescription").value || "No description";
+
+                let project = {
+                    id: Date.now(),
+                    name: projectName,
+                    description: projectDescription,
+                    imageSrc: e.target.result 
+                };
+
+                // Insert the project to the database
+                addProject(project);
+            };
+
+            reader.readAsDataURL(file);
+        });
+
+        function fetchProjects() {
+            fetch("fetch_project.php")
+                .then(response => response.json())
+                .then(data => {
+                    let projectList = document.getElementById("projectList");
+                    projectList.innerHTML = "";
+                    data.forEach(project => {
+                        projectList.innerHTML += `
+                            <div class="project-item">
+                                <img src="${project.image_url}" alt="Project Image">
+                                <div class="project-details">
+                                    <strong>${project.name}</strong>
+                                    <p>${project.description}</p>
+                                    <p>Views: ${project.views}</p>
+                                </div>
+                                <button class="edit" onclick="editProject(${project.id})">Edit</button>
+                                <button class="delete" onclick="deleteProject(${project.id})">Delete</button>
+                            </div>
+                        `;
+                    });
+                });
+        }
+
+        function addProject(project) {
+            let name = document.getElementById("projectName").value;
+            let description = document.getElementById("projectDescription").value;
+
+            let formData = new FormData();
+            formData.append("name", name);
+            formData.append("description", description);
+            formData.append("image", document.getElementById("projectImage").files[0]);
+
+            fetch("add_project.php", {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                alert(data); // Show success or error message
+                fetchProjects(); // Refresh project list
+            });
+        }
+
+        function editProject(id) {
+            let name = prompt("Enter new project name:");
+            let description = prompt("Enter new project description:");
+
+            fetch("edit_project.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `id=${id}&name=${name}&description=${description}`
+            }).then(() => fetchProjects());
+        }
+
+        function deleteProject(id) {
+            fetch("delete_project.php", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: `id=${id}`
+            }).then(() => fetchProjects());
+        }
+
+        fetchProjects(); // Initial fetch to load projects
+    </script>
+
+
+<title>Admin Panel - Feedback</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        .stars {
+            color: gold;
+        }
+    </style>
+ </head>
+
+
+    <h2>Client Feedback</h2>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Client</th>
+                <th>Project</th>
+                <th>Rating</th>
+                <th>Feedback</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody id="feedbackTableBody">
+            <!-- Feedback will be loaded here dynamically -->
+        </tbody>
+    </table>
+
+    <script>
+       function loadFeedback() {
+    fetch("fetch_feedback.php")
+        .then(response => response.json())
+        .then(data => {
+            let feedbackTableBody = document.getElementById("feedbackTableBody");
+            feedbackTableBody.innerHTML = "";
+
+            if (data.error) {
+                feedbackTableBody.innerHTML = `<tr><td colspan="5">${data.error}</td></tr>`;
+                return;
+            }
+
+            data.forEach(feedback => {
+                feedbackTableBody.innerHTML += `
+                    <tr>
+                        <td>${feedback.client_name}</td>
+                        <td>${feedback.project_name}</td>
+                        <td><span class="stars">${feedback.rating_stars}</span></td>
+                        <td>${feedback.feedback}</td>
+                        <td>${feedback.created_at}</td>
+                    </tr>
+                `;
+            });
+        })
+        .catch(error => console.error("Error fetching feedback:", error));
+}
+
+document.addEventListener("DOMContentLoaded", loadFeedback);
+
+    </script>
+</body>
+</html>
