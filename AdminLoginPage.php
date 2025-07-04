@@ -1,11 +1,17 @@
 <?php
 session_start();
-use phpmailer\phpmailer\PHPMailer;
-use phpmailer\phpmailer\Exception;
+<?php
+session_start();
 
-require 'phpmailer/PHPMailer.php';
-require 'phpmailer/SMTP.php';
-require 'phpmailer/Exception.php';
+// ✅ Load PHPMailer classes using absolute path
+require __DIR__ . '/phpmailer/PHPMailer.php';
+require __DIR__ . '/phpmailer/SMTP.php';
+require __DIR__ . '/phpmailer/Exception.php';
+
+// ✅ Use the correct namespaces
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 
 $allowed_users = [
     'Rana' => ['password' => 'collaboration', 'email' => 'rana.abz92@gmail.com'],
