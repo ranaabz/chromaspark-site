@@ -9,6 +9,23 @@ require __DIR__ . '/phpmailer/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+$host = "sql306.infinityfree.com";
+$username = "if0_39395373";
+$password = "UqFQf4S8ifwx";
+$dbname = "if0_39395373_chroma_spark";
+
+$conn = new mysqli($host, $username, $password, $dbname);
+
+if ($conn->connect_error) {
+    die("❌ Connection failed: " . $conn->connect_error);
+}
+echo "✅ Connected to InfinityFree MySQL successfully!";
+
+
+
 
 $allowed_users = [
     'Rana' => ['password' => 'collaboration', 'email' => 'rana.abz92@gmail.com'],
