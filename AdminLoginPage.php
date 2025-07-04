@@ -1,8 +1,5 @@
 <?php
 session_start();
-<?php
-session_start();
-
 // ✅ Load PHPMailer classes using absolute path
 require __DIR__ . '/phpmailer/PHPMailer.php';
 require __DIR__ . '/phpmailer/SMTP.php';
