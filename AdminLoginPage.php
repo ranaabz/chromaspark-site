@@ -3,7 +3,7 @@ session_start();
 use phpmailer\phpmailer\PHPMailer;
 use phpmailer\phpmailer\Exception;
 
-require 'phpmailer/phpmailer.php';
+require 'phpmailer/PHPMailer.php';
 require 'phpmailer/SMTP.php';
 require 'phpmailer/Exception.php';
 
