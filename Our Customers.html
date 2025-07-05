@@ -1,349 +1,412 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Customers - Chroma Spark</title>
-    <link rel="icon" type="image/png" href="Chromaspark.png.jpeg">
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            text-align: center;
-            overflow-x: hidden;
-            overflow-y: auto;
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customers - Chroma Spark</title>
+  <link rel="icon" type="image/png" href="Chromaspark.png.jpeg" />
+  <style>
+    /* === Navbar Styles (copied and adapted from your main nav bar) === */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      text-align: center;
+      overflow-x: hidden;
+      overflow-y: auto;
+      padding-top: 100px; /* to prevent content under fixed navbar */
+    }
 
-        }
-        header {
-            background:white; 
-            color: Black;
-            padding: 20px;
-            font-size: 1.5rem;
-        }
-        .customer-gallery-container {
-            position: relative;
-            max-width: 90%;
-            margin: auto;
-            overflow: hidden;
-        }
-        .cloud {
-            position: absolute;
-            top: 50px;
-            right: -100px;
-            width: 120px;
-            opacity: 0.6;
-            animation: moveClouds 10s linear infinite;
-        }
-        @keyframes moveClouds {
-            0% { right: -100px; }
-            100% { right: 110%; }
-        }
-        .customer-gallery {
-            display: flex;
-            gap: 20px;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-            padding: 20px;
-            scrollbar-width: none;
-        }
-        .customer-gallery::-webkit-scrollbar {
-            display: none;
-        }
-        .customer-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            width: 300px;
-            flex: 0 0 auto;
-            padding: 20px;
-            transition: transform 0.3s ease-in-out;
-        }
-        .customer-card:hover {
-            transform: scale(1.05);
-        }
-        .customer-card img {
-            width: 100px;
-            height: auto;
-            margin-bottom: 10px;
-        }
-        .contact-btn {
-            display: inline-block;
-            background: #0d0235;
-            color: white;
-            padding: 10px 15px;
-            border-radius: 5px;
-            text-decoration: none;
-            transition: background 0.3s;
-        }
-        .contact-btn:hover {
-            background: #fdb43b;
-        }
-        /* Scroll Arrows */
-        .scroll-btn {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            background: rgba(0, 0, 0, 0.6);
-            color: white;
-            border: none;
-            padding: 15px;
-            cursor: pointer;
-            border-radius: 50%;
-            font-size: 20px;
-            transition: background 0.3s;
-        }
-        .scroll-btn:hover {
-            background: rgba(0, 0, 0, 0.8);
-        }
-        .scroll-left {
-            left: 10px;
-            display: none; /* Initially hidden */
-        }
-        .scroll-right {
-            right: 10px;
-        }
-        .navbar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  background-color: #0d0235;
-  color: white;
-  padding: 10px 20px;
-  z-index: 1000;
-}
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #0d0235;
+      color: white;
+      padding: 10px 20px;
+      z-index: 1000;
+    }
 
-.navbar-container {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  max-width: 1200px;
-  margin: 0 auto;
-}
+    .navbar-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-.navbar-logo {
-  font-size: 1.8rem;
-  font-weight: bold;
-  text-decoration: none;
-  color: white;
-  display: flex;
-  align-items: center;
-}
+    .navbar-logo {
+      font-size: 1.8rem;
+      font-weight: bold;
+      text-decoration: none;
+      color: white;
+      display: flex;
+      align-items: center;
+    }
 
-/* Logo image styling */
-.navbar-logo-img {
-  width: 100px;
-  height: 100px;
-  margin-right: 10px;
-  border-radius: 300px;
-}
+    .navbar-logo-img {
+      width: 100px;
+      height: 100px;
+      margin-right: 10px;
+      border-radius: 300px;
+    }
 
-.navbar-links {
-  list-style: none;
-  display: flex;
-  gap: 20px;
-}
+    .navbar-links {
+      list-style: none;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
 
-.navbar-links li {
-  display: inline;
-}
+    .navbar-links li {
+      display: inline;
+    }
 
-.navbar-links a {
-  text-decoration: none;
-  color: white;
-  font-size: 1.1rem;
-  padding: 8px 15px;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
-}
+    .navbar-links a {
+      text-decoration: none;
+      color: white;
+      font-size: 1.1rem;
+      padding: 8px 15px;
+      border-radius: 5px;
+      transition: background-color 0.3s ease;
+    }
 
-.navbar-links a:hover {
-  background-color: #fdb43b;
-}
+    .navbar-links a:hover {
+      background-color: #fdb43b;
+      color: #0d0235;
+    }
 
-        footer {
-  background-color: #fdb43b; /* Background color of footer */
-  color: #05013d; /* Text color */
-  padding: 20px 0;
-  text-align: center;
-}
+    /* Hamburger menu */
+    .menu-toggle {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+    }
 
-.footer-content {
-  max-width: 1200px;
-  margin: 0 auto;
-}
+    .menu-toggle .bar {
+      width: 25px;
+      height: 3px;
+      background-color: white;
+      margin: 4px 0;
+      border-radius: 2px;
+    }
 
-.contact-info, .social-media {
-  margin-bottom: 10px;
-}
+    @media (max-width: 768px) {
+      .navbar-links {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        background-color: #0d0235;
+        padding: 10px 0;
+      }
+      .navbar-links.show {
+        display: flex;
+      }
+      .navbar-links li {
+        width: 100%;
+        text-align: center;
+        margin: 5px 0;
+      }
+      .menu-toggle {
+        display: flex;
+      }
+    }
 
-.email-link, .social-media a {
-  text-decoration: none;
-  color: #05013d;
-  font-size: 16px;
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-}
+    /* === Footer styles (your original) === */
+    footer {
+      background-color: #fdb43b;
+      color: #05013d;
+      padding: 20px 0;
+      text-align: center;
+    }
 
-.email-link i, .social-media a i {
-  font-size: 20px;
-  margin-right: 8px;
-}
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-.footer-icon {
-  width: 20px; /* Adjust size of icons */
-  height: 20px;
-  margin-right: 8px;
-}
+    .contact-info,
+    .social-media {
+      margin-bottom: 10px;
+    }
 
-.email-link:hover, .social-media a:hover {
-  color: #eeeeee; /* Instagram's brand color */
-  transition: color 0.3s ease;
-}
-    </style>
+    .email-link,
+    .social-media a {
+      text-decoration: none;
+      color: #05013d;
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+
+    .email-link:hover,
+    .social-media a:hover {
+      color: #eeeeee;
+      transition: color 0.3s ease;
+    }
+
+    /* === Customer gallery container and cards === */
+    .customer-gallery-container {
+      position: relative;
+      max-width: 90%;
+      margin: auto;
+      overflow: hidden;
+      padding-bottom: 40px;
+    }
+
+    .customer-gallery {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      scroll-behavior: smooth;
+      padding: 20px 0;
+      scrollbar-width: none;
+    }
+
+    .customer-gallery::-webkit-scrollbar {
+      display: none;
+    }
+
+    .customer-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      width: 300px;
+      flex: 0 0 auto;
+      padding: 20px;
+      transition: transform 0.3s ease-in-out;
+      text-align: left;
+    }
+
+    .customer-card:hover {
+      transform: scale(1.05);
+    }
+
+    .customer-card img {
+      width: 100px;
+      height: auto;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      display: block;
+    }
+
+    .customer-card h2 {
+      margin: 0.3em 0 0.2em;
+      color: #0d0235;
+    }
+
+    .customer-card h3 {
+      margin: 0;
+      color: #555;
+      font-weight: 500;
+    }
+
+    .contact-btn {
+      display: inline-block;
+      background: #0d0235;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 5px;
+      text-decoration: none;
+      transition: background 0.3s;
+      margin-top: 15px;
+      font-weight: 600;
+    }
+
+    .contact-btn:hover {
+      background: #fdb43b;
+      color: #0d0235;
+    }
+
+    /* Scroll Arrows */
+    .scroll-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      border: none;
+      padding: 15px;
+      cursor: pointer;
+      border-radius: 50%;
+      font-size: 20px;
+      transition: background 0.3s;
+      z-index: 100;
+    }
+
+    .scroll-btn:hover {
+      background: rgba(0, 0, 0, 0.8);
+    }
+
+    .scroll-left {
+      left: 10px;
+      display: none; /* Initially hidden */
+    }
+
+    .scroll-right {
+      right: 10px;
+    }
+
+    /* Headers inside container */
+    header p {
+      margin: 10px 0;
+      font-size: 1.2rem;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-    <nav class="navbar">
-        <div class="navbar-container">
-          <a href="#home" class="navbar-logo">
-            <!-- Adding the image next to the text -->
-            <img src="Chromaspark.png.jpeg" alt="Chroma Spark Logo" class="navbar-logo-img">
-            Chroma Spark
-          </a>
-          <ul class="navbar-links">
-                <li><a href="SeniorProject.html">Back To Home</a></li>
-          </ul>
-            <div class="menu-toggle" id="mobile-menu">
-                <span class="bar"></span>
-            </div>
-        </div>
-    </nav>
-    
-        <header>
-            <p>Businesses that have trusted Chroma Spark for their branding and design.</p>
-        </header>
-    
-    
-
-    <div class="customer-gallery-container">
-        
-            <header>
-                <p>Businesses that have trusted Chroma Spark for their branding and design.</p>
-                <p>You can click on contact founder to view their work on instagram and contact them for shopping 😊 </p>
-            </header>
-        
-        <button class="scroll-btn scroll-left" onclick="scrollGallery(-300)">&#10094;</button>
-        <section class="customer-gallery" id="gallery">
-            <div class="customer-card">
-                <img src="be you.jpeg" alt="Business 1">
-                <h3>Logo</h3>
-                <h2>B-You By Nadine</h2>
-                <p>Offering a luxurious touch with body butter, body splash, and body scrub for the perfect self-care routine</p>
-                <a href="https://www.instagram.com/beyoubynadine" target="_blank" class="contact-btn">Contact Founder</a>
-            </div>
-
-            <div class="customer-card">
-                <img src="thank you card.jpeg" alt="Business 2">
-                <h3>Thank you card</h3>
-                <h2>Crochet By Jihan</h2>
-                <p>Crochet dolls, flowers, bags, and more</p>
-                <p>100% handmade and high quality</p>
-                <a href="https://www.instagram.com/crochet_by_jihan" target="_blank" class="contact-btn">Contact Founder</a>
-            </div>
-
-            <div class="customer-card">
-                <img src="كيوان للحدادة.jpeg" alt="Business 3">
-                <h3>Logo</h3>
-                <h2>كيوان للحدادة</h2>
-                <p>kiwan blacksmithing</p>
-                <p>+961 70 030 814</p>
-                <a href="https://www.instagram.com/kewan.blacksmithing" target="_blank" class="contact-btn">Contact Founder</a>
-            </div>
-
-            <div class="customer-card">
-                <img src="Swirly.jpeg" alt="Business 4">
-                <h3>Banner</h3>
-                <h2>Swirly</h2>
-                <p>You choose it... WE SWIRL IT!</p>
-                <a href="https://www.instagram.com/swirly.lb" target="_blank" class="contact-btn">Contact Founder</a>
-            </div>
-
-            <div class="customer-card">
-                <img src="GlowZone.jpeg" alt="Business 5">
-                <h3>Logo</h3>
-                <h2>Glowzone</h2>
-                <p>Social Media Management</p>
-                <p>Content</p>
-                <p>Digital</p>
-                <p>Branding and Packaging</p>
-                <a href="https://www.instagram.com/glowzone_consultancy" target="_blank" class="contact-btn">Contact Founder</a>
-            </div>
-
-            <div class="customer-card">
-                <img src="Arab Al Swaeida.jpeg" alt="Business 6">
-                <h3>Logo</h3>
-                <h2>Arab AlSwuaida</h2>
-                <p></p>
-            </div>
-
-            <div class="customer-card">
-                <img src="Equipmed.jpeg" alt="Business 7">
-                <h3>Logo</h3>
-                <h2>Equipmed</h2>
-                <p>Our online medical tools supply brings you top-quality products</p>
-                <p>We handle all the shipping and delivery logistics</p>
-                <a href="https://www.instagram.com/equipmed_leb" target="_blank" class="contact-btn">Contact Founder</a>
-            </div>
-
-            <div class="customer-card">
-                <img src="some_logo.jpg" alt="Business 5">
-                <h3>Business Card</h3>
-                <h2>Another Business</h2>
-                <p>Graphic design services and more</p>
-                <a href="#" target="_blank" class="contact-btn">Contact Founder</a>
-            </div>
-        </section>
-        <button class="scroll-btn scroll-right" onclick="scrollGallery(300)">&#10095;</button>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="SeniorProject.html" class="navbar-logo">
+        <img src="Chromaspark.png.jpeg" alt="Chroma Spark Logo" class="navbar-logo-img" />
+        Chroma Spark
+      </a>
+      <ul class="navbar-links" id="nav-links">
+        <li><a href="SeniorProject.html">Back To Home</a></li>
+      </ul>
+      <div class="menu-toggle" id="mobile-menu">
+        <span class="bar"></span>
+        <span class="bar"></span>
+        <span class="bar"></span>
+      </div>
     </div>
+  </nav>
 
-    <footer>
-        <div class="footer-content">
-          <div class="contact-info">
-            <a href="mailto:chromaspark0@gmail.com" class="email-link">
-              <img src="email icon.jpg" alt="Email Icon" class="footer-icon">
-      
-              <i class="fas fa-envelope"></i> chromaspark0@gmail.com
-            </a>
-          </div>
-          <div class="social-media">
-            <a href="https://www.instagram.com/chroma.spark" target="_blank">
-              <img src="insta icon.jpg" alt="Instagram Icon" class="footer-icon">
-              <i class="fab fa-instagram"></i>follow us on Instagram
-            </a>
-          </div>
-          <p>© 2025 Chroma Spark. All rights reserved.</p>
-        </div>
-      </footer>
+  <header>
+    <p>Businesses that have trusted Chroma Spark for their branding and design.</p>
+    <p>You can click on contact founder to view their work on Instagram and contact them for shopping 😊</p>
+  </header>
 
-    <script>
-        const gallery = document.getElementById("gallery");
-        const leftButton = document.querySelector(".scroll-left");
-        const rightButton = document.querySelector(".scroll-right");
+  <div class="customer-gallery-container">
+    <button class="scroll-btn scroll-left" onclick="scrollGallery(-300)">&#10094;</button>
+    <section class="customer-gallery" id="gallery">
+      <div class="customer-card">
+        <img src="be you.jpeg" alt="Business 1" />
+        <h3>Logo</h3>
+        <h2>B-You By Nadine</h2>
+        <p>Offering a luxurious touch with body butter, body splash, and body scrub for the perfect self-care routine</p>
+        <a href="https://www.instagram.com/beyoubynadine" target="_blank" class="contact-btn">Contact Founder</a>
+      </div>
+      <div class="customer-card">
+        <img src="thank you card.jpeg" alt="Business 2" />
+        <h3>Thank you card</h3>
+        <h2>Crochet By Jihan</h2>
+        <p>Crochet dolls, flowers, bags, and more</p>
+        <p>100% handmade and high quality</p>
+        <a href="https://www.instagram.com/crochet_by_jihan" target="_blank" class="contact-btn">Contact Founder</a>
+      </div>
+      <div class="customer-card">
+        <img src="كيوان للحدادة.jpeg" alt="Business 3" />
+        <h3>Logo</h3>
+        <h2>كيوان للحدادة</h2>
+        <p>kiwan blacksmithing</p>
+        <p>+961 70 030 814</p>
+        <a href="https://www.instagram.com/kewan.blacksmithing" target="_blank" class="contact-btn">Contact Founder</a>
+      </div>
+      <div class="customer-card">
+        <img src="Swirly.jpeg" alt="Business 4" />
+        <h3>Banner</h3>
+        <h2>Swirly</h2>
+        <p>You choose it... WE SWIRL IT!</p>
+        <a href="https://www.instagram.com/swirly.lb" target="_blank" class="contact-btn">Contact Founder</a>
+      </div>
+      <div class="customer-card">
+        <img src="GlowZone.jpeg" alt="Business 5" />
+        <h3>Logo</h3>
+        <h2>Glowzone</h2>
+        <p>Social Media Management</p>
+        <p>Content</p>
+        <p>Digital</p>
+        <p>Branding and Packaging</p>
+        <a href="https://www.instagram.com/glowzone_consultancy" target="_blank" class="contact-btn">Contact Founder</a>
+      </div>
+      <div class="customer-card">
+        <img src="Arab Al Swaeida.jpeg" alt="Business 6" />
+        <h3>Logo</h3>
+        <h2>Arab AlSwuaida</h2>
+        <p></p>
+      </div>
+      <div class="customer-card">
+        <img src="Equipmed.jpeg" alt="Business 7" />
+        <h3>Logo</h3>
+        <h2>Equipmed</h2>
+        <p>Our online medical tools supply brings you top-quality products</p>
+        <p>We handle all the shipping and delivery logistics</p>
+        <a href="https://www.instagram.com/equipmed_leb" target="_blank" class="contact-btn">Contact Founder</a>
+      </div>
+      <div class="customer-card">
+        <img src="some_logo.jpg" alt="Business 8" />
+        <h3>Business Card</h3>
+        <h2>Another Business</h2>
+        <p>Graphic design services and more</p>
+        <a href="#" target="_blank" class="contact-btn">Contact Founder</a>
+      </div>
+    </section>
+    <button class="scroll-btn scroll-right" onclick="scrollGallery(300)">&#10095;</button>
+  </div>
 
-        function scrollGallery(distance) {
-            gallery.scrollBy({ left: distance, behavior: "smooth" });
-        }
+  <footer>
+    <div class="footer-content">
+      <div class="contact-info">
+        <a href="mailto:chromaspark0@gmail.com" class="email-link">
+          <img src="email icon.jpg" alt="Email Icon" class="footer-icon" />
+          chromaspark0@gmail.com
+        </a>
+      </div>
+      <div class="social-media">
+        <a href="https://www.instagram.com/chroma.spark" target="_blank">
+          <img src="insta icon.jpg" alt="Instagram Icon" class="footer-icon" />
+          follow us on Instagram
+        </a>
+      </div>
+      <p>© 2025 Chroma Spark. All rights reserved.</p>
+    </div>
+  </footer>
 
-        function updateArrowVisibility() {
-            leftButton.style.display = gallery.scrollLeft > 0 ? "block" : "none";
-            rightButton.style.display = gallery.scrollLeft + gallery.clientWidth < gallery.scrollWidth ? "block" : "none";
-        }
+  <script>
+    // Hamburger toggle
+    const menuToggle = document.getElementById('mobile-menu');
+    const navLinks = document.getElementById('nav-links');
 
-        gallery.addEventListener("scroll", updateArrowVisibility);
-        window.onload = updateArrowVisibility;
-    </script>
+    menuToggle.addEventListener('click', () => {
+      navLinks.classList.toggle('show');
+    });
+
+    // Scroll gallery controls
+    const gallery = document.getElementById('gallery');
+    const leftButton = document.querySelector('.scroll-left');
+    const rightButton = document.querySelector('.scroll-right');
+
+    function scrollGallery(distance) {
+      gallery.scrollBy({ left: distance, behavior: 'smooth' });
+    }
+
+    function updateArrowVisibility() {
+      leftButton.style.display = gallery.scrollLeft > 0 ? 'block' : 'none';
+      rightButton.style.display =
+        gallery.scrollLeft + gallery.clientWidth < gallery.scrollWidth
+          ? 'block'
+          : 'none';
+    }
+
+    gallery.addEventListener('scroll', updateArrowVisibility);
+    window.onload = updateArrowVisibility;
+  </script>
 </body>
 </html>
