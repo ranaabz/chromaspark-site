@@ -6,12 +6,13 @@
   <title>Customers - Chroma Spark</title>
   <link rel="icon" type="image/png" href="Chromaspark.png.jpeg" />
   <style>
-    /* === Navbar Styles (copied and adapted from your main nav bar) === */
+    /* General Reset */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
       font-family: 'Poppins', sans-serif;
       margin: 0;
@@ -20,9 +21,9 @@
       text-align: center;
       overflow-x: hidden;
       overflow-y: auto;
-      padding-top: 100px; /* to prevent content under fixed navbar */
     }
 
+    /* Navbar */
     .navbar {
       position: fixed;
       top: 0;
@@ -30,14 +31,14 @@
       width: 100%;
       background-color: #0d0235;
       color: white;
-      padding: 10px 20px;
+      padding: 12px 20px; /* Slightly increased vertical padding */
       z-index: 1000;
     }
 
     .navbar-container {
       display: flex;
       justify-content: space-between;
-      align-items: center;
+      align-items: center; /* vertically center */
       flex-wrap: wrap;
       max-width: 1200px;
       margin: 0 auto;
@@ -49,21 +50,25 @@
       text-decoration: none;
       color: white;
       display: flex;
-      align-items: center;
+      align-items: center; /* vertically center image & text */
+      white-space: nowrap; /* prevent wrapping */
     }
 
     .navbar-logo-img {
-      width: 100px;
-      height: 100px;
+      width: 60px; /* same size as main page */
+      height: 60px;
       margin-right: 10px;
-      border-radius: 300px;
+      border-radius: 50%;
+      object-fit: contain;
     }
 
     .navbar-links {
       list-style: none;
       display: flex;
       gap: 20px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
+      overflow-x: auto; /* allow horizontal scroll if needed */
+      -webkit-overflow-scrolling: touch;
     }
 
     .navbar-links li {
@@ -77,6 +82,8 @@
       padding: 8px 15px;
       border-radius: 5px;
       transition: background-color 0.3s ease;
+      white-space: nowrap; /* prevent wrapping */
+      display: inline-block;
     }
 
     .navbar-links a:hover {
@@ -84,89 +91,21 @@
       color: #0d0235;
     }
 
-    /* Hamburger menu */
-    .menu-toggle {
-      display: none;
-      flex-direction: column;
-      cursor: pointer;
+    /* Header text */
+    header {
+      margin-top: 100px; /* below fixed navbar */
+      background: white;
+      color: black;
+      padding: 20px;
+      font-size: 1.5rem;
     }
 
-    .menu-toggle .bar {
-      width: 25px;
-      height: 3px;
-      background-color: white;
-      margin: 4px 0;
-      border-radius: 2px;
-    }
-
-    @media (max-width: 768px) {
-      .navbar-links {
-        display: none;
-        flex-direction: column;
-        width: 100%;
-        background-color: #0d0235;
-        padding: 10px 0;
-      }
-      .navbar-links.show {
-        display: flex;
-      }
-      .navbar-links li {
-        width: 100%;
-        text-align: center;
-        margin: 5px 0;
-      }
-      .menu-toggle {
-        display: flex;
-      }
-    }
-
-    /* === Footer styles (your original) === */
-    footer {
-      background-color: #fdb43b;
-      color: #05013d;
-      padding: 20px 0;
-      text-align: center;
-    }
-
-    .footer-content {
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-
-    .contact-info,
-    .social-media {
-      margin-bottom: 10px;
-    }
-
-    .email-link,
-    .social-media a {
-      text-decoration: none;
-      color: #05013d;
-      font-size: 16px;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .footer-icon {
-      width: 20px;
-      height: 20px;
-      margin-right: 8px;
-    }
-
-    .email-link:hover,
-    .social-media a:hover {
-      color: #eeeeee;
-      transition: color 0.3s ease;
-    }
-
-    /* === Customer gallery container and cards === */
+    /* Customer gallery container */
     .customer-gallery-container {
       position: relative;
       max-width: 90%;
-      margin: auto;
+      margin: 20px auto 60px;
       overflow: hidden;
-      padding-bottom: 40px;
     }
 
     .customer-gallery {
@@ -205,15 +144,25 @@
       display: block;
     }
 
-    .customer-card h2 {
-      margin: 0.3em 0 0.2em;
+    .customer-card h3 {
+      font-weight: 600;
       color: #0d0235;
+      margin-bottom: 5px;
+      font-size: 1.1rem;
     }
 
-    .customer-card h3 {
-      margin: 0;
-      color: #555;
-      font-weight: 500;
+    .customer-card h2 {
+      font-weight: 700;
+      font-size: 1.3rem;
+      margin-bottom: 10px;
+      color: #fdb43b;
+    }
+
+    .customer-card p {
+      font-size: 0.95rem;
+      color: #333;
+      margin-bottom: 8px;
+      line-height: 1.3;
     }
 
     .contact-btn {
@@ -224,8 +173,10 @@
       border-radius: 5px;
       text-decoration: none;
       transition: background 0.3s;
-      margin-top: 15px;
       font-weight: 600;
+      text-align: center;
+      width: 100%;
+      box-sizing: border-box;
     }
 
     .contact-btn:hover {
@@ -233,7 +184,7 @@
       color: #0d0235;
     }
 
-    /* Scroll Arrows */
+    /* Scroll buttons */
     .scroll-btn {
       position: absolute;
       top: 50%;
@@ -246,7 +197,7 @@
       border-radius: 50%;
       font-size: 20px;
       transition: background 0.3s;
-      z-index: 100;
+      z-index: 10;
     }
 
     .scroll-btn:hover {
@@ -255,18 +206,51 @@
 
     .scroll-left {
       left: 10px;
-      display: none; /* Initially hidden */
+      display: none; /* initially hidden */
     }
 
     .scroll-right {
       right: 10px;
     }
 
-    /* Headers inside container */
-    header p {
-      margin: 10px 0;
-      font-size: 1.2rem;
-      color: #333;
+    /* Footer */
+    footer {
+      background-color: #fdb43b;
+      color: #05013d;
+      padding: 20px 0;
+      text-align: center;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .contact-info,
+    .social-media {
+      margin-bottom: 10px;
+    }
+
+    .email-link,
+    .social-media a {
+      text-decoration: none;
+      color: #05013d;
+      font-size: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .footer-icon {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+    }
+
+    .email-link:hover,
+    .social-media a:hover {
+      color: #eeeeee;
+      transition: color 0.3s ease;
     }
   </style>
 </head>
@@ -277,55 +261,54 @@
         <img src="Chromaspark.png.jpeg" alt="Chroma Spark Logo" class="navbar-logo-img" />
         Chroma Spark
       </a>
-      <ul class="navbar-links" id="nav-links">
+      <ul class="navbar-links">
         <li><a href="SeniorProject.html">Back To Home</a></li>
       </ul>
-      <div class="menu-toggle" id="mobile-menu">
-        <span class="bar"></span>
-        <span class="bar"></span>
-        <span class="bar"></span>
-      </div>
     </div>
   </nav>
 
   <header>
     <p>Businesses that have trusted Chroma Spark for their branding and design.</p>
-    <p>You can click on contact founder to view their work on Instagram and contact them for shopping 😊</p>
   </header>
 
   <div class="customer-gallery-container">
-    <button class="scroll-btn scroll-left" onclick="scrollGallery(-300)">&#10094;</button>
+    <button class="scroll-btn scroll-left" onclick="scrollGallery(-300)" aria-label="Scroll Left">&#10094;</button>
+
     <section class="customer-gallery" id="gallery">
       <div class="customer-card">
         <img src="be you.jpeg" alt="Business 1" />
         <h3>Logo</h3>
         <h2>B-You By Nadine</h2>
         <p>Offering a luxurious touch with body butter, body splash, and body scrub for the perfect self-care routine</p>
-        <a href="https://www.instagram.com/beyoubynadine" target="_blank" class="contact-btn">Contact Founder</a>
+        <a href="https://www.instagram.com/beyoubynadine" target="_blank" rel="noopener noreferrer" class="contact-btn">Contact Founder</a>
       </div>
+
       <div class="customer-card">
         <img src="thank you card.jpeg" alt="Business 2" />
         <h3>Thank you card</h3>
         <h2>Crochet By Jihan</h2>
         <p>Crochet dolls, flowers, bags, and more</p>
         <p>100% handmade and high quality</p>
-        <a href="https://www.instagram.com/crochet_by_jihan" target="_blank" class="contact-btn">Contact Founder</a>
+        <a href="https://www.instagram.com/crochet_by_jihan" target="_blank" rel="noopener noreferrer" class="contact-btn">Contact Founder</a>
       </div>
+
       <div class="customer-card">
         <img src="كيوان للحدادة.jpeg" alt="Business 3" />
         <h3>Logo</h3>
         <h2>كيوان للحدادة</h2>
         <p>kiwan blacksmithing</p>
         <p>+961 70 030 814</p>
-        <a href="https://www.instagram.com/kewan.blacksmithing" target="_blank" class="contact-btn">Contact Founder</a>
+        <a href="https://www.instagram.com/kewan.blacksmithing" target="_blank" rel="noopener noreferrer" class="contact-btn">Contact Founder</a>
       </div>
+
       <div class="customer-card">
         <img src="Swirly.jpeg" alt="Business 4" />
         <h3>Banner</h3>
         <h2>Swirly</h2>
         <p>You choose it... WE SWIRL IT!</p>
-        <a href="https://www.instagram.com/swirly.lb" target="_blank" class="contact-btn">Contact Founder</a>
+        <a href="https://www.instagram.com/swirly.lb" target="_blank" rel="noopener noreferrer" class="contact-btn">Contact Founder</a>
       </div>
+
       <div class="customer-card">
         <img src="GlowZone.jpeg" alt="Business 5" />
         <h3>Logo</h3>
@@ -334,31 +317,35 @@
         <p>Content</p>
         <p>Digital</p>
         <p>Branding and Packaging</p>
-        <a href="https://www.instagram.com/glowzone_consultancy" target="_blank" class="contact-btn">Contact Founder</a>
+        <a href="https://www.instagram.com/glowzone_consultancy" target="_blank" rel="noopener noreferrer" class="contact-btn">Contact Founder</a>
       </div>
+
       <div class="customer-card">
         <img src="Arab Al Swaeida.jpeg" alt="Business 6" />
         <h3>Logo</h3>
         <h2>Arab AlSwuaida</h2>
         <p></p>
       </div>
+
       <div class="customer-card">
         <img src="Equipmed.jpeg" alt="Business 7" />
         <h3>Logo</h3>
         <h2>Equipmed</h2>
         <p>Our online medical tools supply brings you top-quality products</p>
         <p>We handle all the shipping and delivery logistics</p>
-        <a href="https://www.instagram.com/equipmed_leb" target="_blank" class="contact-btn">Contact Founder</a>
+        <a href="https://www.instagram.com/equipmed_leb" target="_blank" rel="noopener noreferrer" class="contact-btn">Contact Founder</a>
       </div>
+
       <div class="customer-card">
         <img src="some_logo.jpg" alt="Business 8" />
         <h3>Business Card</h3>
         <h2>Another Business</h2>
         <p>Graphic design services and more</p>
-        <a href="#" target="_blank" class="contact-btn">Contact Founder</a>
+        <a href="#" target="_blank" rel="noopener noreferrer" class="contact-btn">Contact Founder</a>
       </div>
     </section>
-    <button class="scroll-btn scroll-right" onclick="scrollGallery(300)">&#10095;</button>
+
+    <button class="scroll-btn scroll-right" onclick="scrollGallery(300)" aria-label="Scroll Right">&#10095;</button>
   </div>
 
   <footer>
@@ -370,7 +357,7 @@
         </a>
       </div>
       <div class="social-media">
-        <a href="https://www.instagram.com/chroma.spark" target="_blank">
+        <a href="https://www.instagram.com/chroma.spark" target="_blank" rel="noopener noreferrer">
           <img src="insta icon.jpg" alt="Instagram Icon" class="footer-icon" />
           follow us on Instagram
         </a>
@@ -380,33 +367,25 @@
   </footer>
 
   <script>
-    // Hamburger toggle
-    const menuToggle = document.getElementById('mobile-menu');
-    const navLinks = document.getElementById('nav-links');
-
-    menuToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('show');
-    });
-
-    // Scroll gallery controls
-    const gallery = document.getElementById('gallery');
-    const leftButton = document.querySelector('.scroll-left');
-    const rightButton = document.querySelector('.scroll-right');
+    const gallery = document.getElementById("gallery");
+    const leftButton = document.querySelector(".scroll-left");
+    const rightButton = document.querySelector(".scroll-right");
 
     function scrollGallery(distance) {
-      gallery.scrollBy({ left: distance, behavior: 'smooth' });
+      gallery.scrollBy({ left: distance, behavior: "smooth" });
     }
 
     function updateArrowVisibility() {
-      leftButton.style.display = gallery.scrollLeft > 0 ? 'block' : 'none';
+      leftButton.style.display = gallery.scrollLeft > 0 ? "block" : "none";
       rightButton.style.display =
         gallery.scrollLeft + gallery.clientWidth < gallery.scrollWidth
-          ? 'block'
-          : 'none';
+          ? "block"
+          : "none";
     }
 
-    gallery.addEventListener('scroll', updateArrowVisibility);
-    window.onload = updateArrowVisibility;
+    gallery.addEventListener("scroll", updateArrowVisibility);
+    window.addEventListener("load", updateArrowVisibility);
+    window.addEventListener("resize", updateArrowVisibility);
   </script>
 </body>
 </html>
