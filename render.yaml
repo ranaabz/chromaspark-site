@@ -3,5 +3,7 @@ services:
     name: chroma-spark
     env: php
     plan: free
-    buildCommand: ""
-    startCommand: "php -S 0.0.0.0:10000 -t ."
+    buildCommand: |
+      apt-get update
+      apt-get install -y php-mysqli
+    startCommand: php -S 0.0.0.0:10000 -t .
