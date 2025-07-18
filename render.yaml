@@ -3,9 +3,8 @@ services:
     name: chromaspark-site
     env: php
     plan: free
-    buildCommand: ""
+    buildCommand: "echo Building..."
     startCommand: ""
     envVars:
       - key: PHP_EXTENSIONS
         value: mysqli
-        
