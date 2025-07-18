@@ -1,9 +1,5 @@
 services:
   - type: web
     name: chroma-spark
-    env: php
+    env: docker
     plan: free
-    buildCommand: |
-      apt-get update
-      apt-get install -y php-mysqli
-    startCommand: php -S 0.0.0.0:10000 -t .
