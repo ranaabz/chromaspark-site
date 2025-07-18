@@ -1,10 +1,17 @@
 services:
   - type: web
-    name: chromaspark-site
+    name: your-app-name
     env: php
     plan: free
-    buildCommand: "echo Building..."
-    startCommand: ""
+    buildCommand: ""
+    startCommand: "php -S 0.0.0.0:10000 -t public"
     envVars:
-      - key: PHP_EXTENSIONS
-        value: mysqli
+      - key: host
+        value: localhost
+      - key: user
+        value: root
+      - key: password
+        value: 
+      - key: database
+        value: chroma_spark
+    autoDeploy: true
