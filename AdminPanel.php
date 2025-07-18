@@ -1,9 +1,9 @@
 <?php
-$host = getenv("DB_HOST") ?: "localhost";
-$port = getenv("DB_PORT") ?: 3306;
-$user = getenv("DB_USER") ?: "root";
-$password = getenv("DB_PASS") ?: "";
-$database = getenv("DB_NAME") ?: "chroma_spark";
+$host = getenv("host") ?: "localhost";
+$port = getenv("port") ?: 3306;
+$user = getenv("user") ?: "root";
+$password = getenv("pass") ?: "";
+$database = getenv("name") ?: "chroma_spark";
 
 // Create connection
 $conn = new mysqli($host, $user, $password, $database, $port);
