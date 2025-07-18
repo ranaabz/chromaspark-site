@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: chromaspark-site
+    env: php
+    plan: free
+    buildCommand: ""
+    startCommand: ""
+    envVars:
+      - key: PHP_EXTENSIONS
+        value: mysqli
