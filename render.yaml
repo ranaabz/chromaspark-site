@@ -8,3 +8,4 @@ services:
     envVars:
       - key: PHP_EXTENSIONS
         value: mysqli
+        
