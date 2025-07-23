@@ -1,15 +1,18 @@
 <?php
-include 'AdminPanel.php'; // Include database connection
+include 'connection.php'; // Should set $dbconn for PostgreSQL connection
 
-$id = $_POST['id'];
+$id = intval($_POST['id']);
 $name = $_POST['name'];
 $description = $_POST['description'];
 
-$sql = "UPDATE projects SET name = '$name', description = '$description' WHERE id = $id";
+// Use parameterized query to avoid SQL injection
+$sql = "UPDATE projects SET name = $1, description = $2 WHERE id = $3";
 
-if ($conn->query($sql) === TRUE) {
+$result = pg_query_params($dbconn, $sql, array($name, $description, $id));
+
+if ($result) {
     echo "Project updated successfully!";
 } else {
-    echo "Error: " . $conn->error;
+    echo "Error: " . pg_last_error($dbconn);
 }
 ?>
