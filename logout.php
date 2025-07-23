@@ -2,7 +2,7 @@
 session_start();
 
 // Include database connection
-require_once 'AdminPanel.php'; // Make sure this file creates $conn (PostgreSQL connection resource)
+require_once 'connection.php'; // Make sure this file creates $conn (PostgreSQL connection resource)
 
 if (isset($_SESSION['user_id'])) {
     $userId = $_SESSION['user_id'];
