@@ -4,18 +4,10 @@ use PHPMailer\PHPMailer\Exception;
 
 require 'vendor/autoload.php';
 
-// Database connection details
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "chroma_spark";
-
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check connection
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+// Connect to PostgreSQL - update with your Render DB credentials or env vars
+$dbconn = pg_connect("host=dpg-d209sfre5dus73d5rfsg-a dbname=chroma_spark_nfki user=chroma_spark_nfki_user password=MJfUXNzs4727vpq98rdbLtiPRDVTrILE port=5432");
+if (!$dbconn) {
+    die("Connection failed: " . pg_last_error());
 }
 
 // Function to sanitize input data
@@ -48,42 +40,39 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
     // Generate a verification token
     $verification_token = bin2hex(random_bytes(32));
-    $is_verified = 0; // Initially unverified
+    $is_verified = false; // boolean in PostgreSQL
 
-    // Prepare the SQL statement (FIXED with comma and correct values)
+    // Insert user into DB
     $sql = "INSERT INTO clients (username, email, password, verification_token, is_verified) 
-        VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($sql);
+            VALUES ($1, $2, $3, $4, $5)";
+    $result = pg_query_params($dbconn, $sql, [
+        $username, 
+        $email, 
+        $hashed_password, 
+        $verification_token, 
+        $is_verified
+    ]);
 
-    if (!$stmt) {
-        die("Prepare failed: " . $conn->error);
-    }
-
-    $stmt->bind_param("ssssi", $username, $email, $hashed_password, $verification_token, $is_verified);
-
-    if ($stmt->execute()) {
-        $user_id = $stmt->insert_id;
-
+    if ($result) {
         // Send verification email
         $mail = new PHPMailer(true);
         try {
-            // Server settings
             $mail->isSMTP();
             $mail->Host = 'smtp.gmail.com';
             $mail->SMTPAuth = true;
-            $mail->Username = 'chromaspark0@gmail.com'; 
-            $mail->Password = 'ssiz jqwh ugze puqy'; 
+            $mail->Username = 'chromaspark0@gmail.com';
+            $mail->Password = 'ssiz jqwh ugze puqy';
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
             $mail->Port = 587;
 
-            // Recipients
             $mail->setFrom('chromaspark0@gmail.com', 'Chroma Spark');
             $mail->addAddress($email, $username);
 
-            // Content
             $mail->isHTML(true);
             $mail->Subject = 'Verify Your Email Address';
-            $verification_link = 'http://localhost/SeniorProject/verify.php?token=' . $verification_token . '&email=' . urlencode($email);
+
+            // Change localhost to your production domain!
+            $verification_link = 'https://chromaspark.onrender.com/verify.php?token=' . $verification_token . '&email=' . urlencode($email);
 
             $mail->Body = '
                 <html>
@@ -95,24 +84,19 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 </body>
                 </html>
             ';
-
             $mail->AltBody = 'Thank you for signing up. Please verify your email by visiting: ' . $verification_link;
 
             $mail->send();
-            // Redirect after sending
+
             header("Location: check_email.html");
             exit();
-
         } catch (Exception $e) {
             echo "Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
-
     } else {
-        echo "Error inserting user: " . $stmt->error;
+        echo "Error inserting user: " . pg_last_error($dbconn);
     }
 
-    $stmt->close();
+    pg_close($dbconn);
 }
-
-$conn->close();
 ?>
