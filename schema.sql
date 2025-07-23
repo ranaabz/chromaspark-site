@@ -53,10 +53,9 @@ CREATE TABLE projects (
 -- Feedback table
 CREATE TABLE feedback (
     id SERIAL PRIMARY KEY,
-    client_id INT REFERENCES clients(id) ON DELETE CASCADE,
-    project_id INT REFERENCES projects(id) ON DELETE CASCADE,
+    client_name VARCHAR(150) NOT NULL,
+    project_name VARCHAR(255) NOT NULL,
     rating INT CHECK (rating >= 1 AND rating <= 5),
     feedback TEXT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
