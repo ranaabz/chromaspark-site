@@ -1,28 +1,35 @@
 <?php
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $uploadDir = 'uploads/';
+    $uploadDir = __DIR__ . '/uploads/';  // Use absolute path for safety
+
     if (!is_dir($uploadDir)) {
         mkdir($uploadDir, 0755, true);
     }
+
     $uploadedFile = $uploadDir . basename($_FILES['logo']['name']);
 
+    // Move uploaded file
     if (move_uploaded_file($_FILES['logo']['tmp_name'], $uploadedFile)) {
-        // Run Python analyze_logo.py script
-        $command = escapeshellcmd("python3 analyze_logo.py " . escapeshellarg($uploadedFile));
+        // Sanitize the file path for shell command
+        $escapedFile = escapeshellarg($uploadedFile);
+
+        // Command to run Python script
+        $command = "python3 analyze_logo.py $escapedFile 2>&1"; // Capture stderr as well
         $output = shell_exec($command);
 
         echo "<pre>" . htmlspecialchars($output) . "</pre>";
 
-        // Check for generated files
+        // Check for generated files with absolute paths
         $reportPdf = $uploadDir . "logo_report.pdf";
         $debugPng = $uploadDir . "debug_output.png";
 
         echo '<div style="margin-top:20px;">';
         if (file_exists($reportPdf)) {
-            echo '<a href="' . $reportPdf . '" download class="download-btn">📥 Download Logo Report (PDF)</a> ';
+            // Use relative URL path for links, assuming 'uploads/' is web-accessible
+            echo '<a href="uploads/logo_report.pdf" download class="download-btn">📥 Download Logo Report (PDF)</a> ';
         }
         if (file_exists($debugPng)) {
-            echo '<a href="' . $debugPng . '" download class="download-btn">🖼️ Download Annotated PNG</a>';
+            echo '<a href="uploads/debug_output.png" download class="download-btn">🖼️ Download Annotated PNG</a>';
         }
         echo '</div>';
     } else {
