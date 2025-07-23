@@ -1,45 +1,48 @@
 <?php
-include 'connection.php';  // Make sure AdminPanel.php has your pg_connect() connection as $dbconn
+include 'connection.php';  // This should define $dbconn via pg_connect
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $name = $_POST['name'];
     $description = $_POST['description'];
 
-    // Check if file is uploaded
     if (isset($_FILES['image'])) {
         $image = $_FILES['image'];
 
-        // Check for file upload errors
         if ($image['error'] != 0) {
-            echo "Error uploading image.";
+            echo "❌ Error uploading image.";
             exit;
         }
 
-        // Set the file path for the uploaded image
-        $imagePath = 'uploads/' . basename($image['name']);
+        // Render: Upload to /tmp instead of /uploads
+        $uploadDir = '/tmp/';
+        $imageFilename = basename($image['name']);
+        $imagePath = $uploadDir . $imageFilename;
 
-        // Move the uploaded file to the uploads directory
         if (move_uploaded_file($image['tmp_name'], $imagePath)) {
-            echo "Image uploaded successfully.";
+            echo "✅ Image uploaded to temporary storage.<br>";
         } else {
-            echo "Failed to upload image.";
+            echo "❌ Failed to move uploaded file.<br>";
             exit;
         }
+
+        // Optionally: move to permanent CDN or log filename for DB
+        $dbImagePath = $imageFilename; // Just the name to display later
+
     } else {
-        echo "No image uploaded.";
+        echo "❌ No image uploaded.";
         exit;
     }
 
-    // Insert data into the database using pg_query_params to avoid SQL injection
+    // Insert into PostgreSQL
     $sql = "INSERT INTO projects (name, description, image_url) VALUES ($1, $2, $3)";
-    $params = array($name, $description, $imagePath);
+    $params = [$name, $description, $dbImagePath];
 
     $result = pg_query_params($dbconn, $sql, $params);
 
     if ($result) {
-        echo "Project added successfully!";
+        echo "✅ Project added successfully!";
     } else {
-        echo "Error: " . pg_last_error($dbconn);
+        echo "❌ DB Error: " . pg_last_error($dbconn);
     }
 }
 ?>
