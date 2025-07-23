@@ -1,42 +1,51 @@
 <?php
-// Database connection
-$host = "localhost";
-$user = "root";
-$password = "";
-$dbname = "chroma_spark";
+include 'connection.php';  // $dbconn via pg_connect
 
-$conn = new mysqli($host, $user, $password, $dbname);
-
-// Check for DB connection error
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    echo "Invalid request method.";
+    exit();
 }
 
-// Get and sanitize input
+// Get and sanitize inputs (basic sanitization)
 $project_id = intval($_POST['project_id']);
 $rating = intval($_POST['rating']);
-$feedback = $conn->real_escape_string($_POST['feedback']);
-$name = $conn->real_escape_string($_POST['name']);
-$email = $conn->real_escape_string($_POST['email']);
+$feedback = trim($_POST['feedback']);
+$name = trim($_POST['name']);
+$email = trim($_POST['email']);
 
-// Insert into database
-$sql = "INSERT INTO feedback (client_name,
-    project_name,
-    rating,
-    rating_stars,
-    feedback,
-    created_at,
-    updated_at)
-        VALUES (?, ?, ?, ?, ?, ?,?)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("ssisii", $client_name, $rating, $feedback, $project_name, $created_at);
+// You might want to add more validation here (e.g., valid email, rating range, etc.)
 
-if ($stmt->execute()) {
-    echo "Thank you! Your feedback was submitted.";
-} else {
-    echo "Error: " . $stmt->error;
+// Get project_name from projects table based on project_id
+$sql_project = "SELECT name FROM projects WHERE id = $1";
+$result_project = pg_query_params($dbconn, $sql_project, [$project_id]);
+
+if (!$result_project || pg_num_rows($result_project) === 0) {
+    echo "Invalid project.";
+    exit();
 }
 
-$stmt->close();
-$conn->close();
+$project_row = pg_fetch_assoc($result_project);
+$project_name = $project_row['name'];
+
+// Store current timestamp
+$created_at = date('Y-m-d H:i:s');
+$updated_at = $created_at;
+
+// Calculate rating_stars (assuming same as rating, or you can store rating as integer stars)
+$rating_stars = $rating;
+
+// Insert into feedback table
+$sql_insert = "INSERT INTO feedback 
+    (client_name, project_name, rating, rating_stars, feedback, created_at, updated_at) 
+    VALUES ($1, $2, $3, $4, $5, $6, $7)";
+
+$params = [$name, $project_name, $rating, $rating_stars, $feedback, $created_at, $updated_at];
+
+$result_insert = pg_query_params($dbconn, $sql_insert, $params);
+
+if ($result_insert) {
+    echo "Thank you! Your feedback was submitted.";
+} else {
+    echo "Error: " . pg_last_error($dbconn);
+}
 ?>
