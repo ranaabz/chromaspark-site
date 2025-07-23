@@ -7,43 +7,41 @@ require __DIR__ . '/phpmailer/Exception.php';
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
+include 'connection.php';  // Your centralized Postgres connection as $dbconn
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $username = $_POST['username'];
+    $username = trim($_POST['username']);
     $password = $_POST['password'];
 
-    $con = new mysqli('localhost', 'root', '', 'chroma_spark');
+    // Prepare SQL to fetch user where not deleted
+    $sql = "SELECT * FROM clients WHERE username = $1 AND is_deleted = FALSE";
+    $result = pg_query_params($dbconn, $sql, [$username]);
 
-    if ($con->connect_error) {
-        die("Connection failed: " . $con->connect_error);
+    if (!$result) {
+        die("Database error: " . pg_last_error($dbconn));
     }
 
-    // Include is_deleted check in the query
-    $sql = "SELECT * FROM clients WHERE username = ? AND is_deleted = 0";
-    $stmt = $con->prepare($sql);
-    $stmt->bind_param("s", $username);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    $user = $result->fetch_assoc();
+    $user = pg_fetch_assoc($result);
 
     if ($user) {
+        // Verify password (assuming passwords are hashed with password_hash)
         if (password_verify($password, $user['password'])) {
-            // ✅ Generate 6-digit 2FA code
+            // Generate 6-digit 2FA code
             $code = rand(100000, 999999);
             $_SESSION['2fa_code'] = $code;
-            $_SESSION['2fa_expires'] = time() + 300; // 5 minutes
-            $_SESSION['client_id_temp'] = $user['id']; // store temporarily until 2FA is verified
+            $_SESSION['2fa_expires'] = time() + 300; // 5 minutes expiration
+            $_SESSION['client_id_temp'] = $user['id'];
             $_SESSION['username_temp'] = $user['username'];
             $_SESSION['email_temp'] = $user['email'];
 
-            // ✅ Send code via email using PHPMailer
+            // Send email using PHPMailer
             $mail = new PHPMailer(true);
             try {
                 $mail->isSMTP();
                 $mail->Host = 'smtp.gmail.com';
                 $mail->SMTPAuth = true;
                 $mail->Username = 'chromaspark0@gmail.com';
-                $mail->Password = 'ssiz jqwh ugze puqy';
+                $mail->Password = 'ssiz jqwh ugze puqy';  // Use app password
                 $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
                 $mail->Port = 587;
 
@@ -56,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
                 $mail->send();
 
-                // ✅ Redirect to 2FA verification page
                 header("Location: verify_2fa.php");
                 exit();
             } catch (Exception $e) {
@@ -67,13 +64,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             exit();
         }
     } else {
-        // The user might exist but is deleted
-        $checkDeleted = $con->prepare("SELECT id FROM clients WHERE username = ? AND is_deleted = 1");
-        $checkDeleted->bind_param("s", $username);
-        $checkDeleted->execute();
-        $deletedResult = $checkDeleted->get_result();
+        // Check if user is deleted
+        $checkDeletedSql = "SELECT id FROM clients WHERE username = $1 AND is_deleted = TRUE";
+        $deletedResult = pg_query_params($dbconn, $checkDeletedSql, [$username]);
 
-        if ($deletedResult->num_rows > 0) {
+        if ($deletedResult && pg_num_rows($deletedResult) > 0) {
             header("Location: login.php?error=account_deleted");
         } else {
             header("Location: login.php?error=user_not_found");
