@@ -1,5 +1,4 @@
 <?php
-// Enable detailed error reporting for debugging
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -29,10 +28,8 @@ if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
     $targetFile = $targetDir . $safeFilename;
 
     if (move_uploaded_file($_FILES["logo"]["tmp_name"], $targetFile)) {
-        // Python setup
         $python = escapeshellcmd("C:/Users/ABM/AppData/Local/Programs/Python/Python313/python.exe");
 
-        // === Step 1: Main logo analysis ===
         $analyzeScript = escapeshellarg(__DIR__ . "/analyze_logo.py");
         $imagePath = escapeshellarg($targetFile);
         $cmd1 = "$python $analyzeScript $imagePath 2>&1";
@@ -44,7 +41,7 @@ if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
             echo "⚠️ No output from the Python script. Ensure Python and OpenCV are correctly installed.";
         }
 
-        // === Step 2: Error segmentation ===
+        // Error segmentation
         $segmentScript = escapeshellarg(__DIR__ . "/segment_logo_cv.py");
         $cmd2 = "$python $segmentScript $imagePath 2>&1";
         $seg_output = trim(shell_exec($cmd2));
@@ -52,9 +49,20 @@ if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
         if (!empty($seg_output) && file_exists($seg_output)) {
             $webPath = str_replace(__DIR__, '', $seg_output);
             echo "<h3>🚩 Error Segmentation Map</h3>";
-            echo "<img src='$webPath' style='max-width:500px;border:2px solid #aaa;'><br><br>";
+            echo "<img src='" . htmlspecialchars($webPath) . "' style='max-width:500px;border:2px solid #aaa;'><br><br>";
         } else {
             echo "⚠️ Error segmentation failed or file not found.";
+        }
+
+        // Extract annotated image filename from $output1 if available
+        if (preg_match('/Annotated Image Saved:\s*(.+\.png)/i', $output1, $matches)) {
+            $annotatedFilename = trim($matches[1]);
+            $annotatedPath = $targetDir . $annotatedFilename;
+            if (file_exists($annotatedPath)) {
+                $webAnnotatedPath = str_replace(__DIR__, '', $annotatedPath);
+                echo "<h3>📸 Annotated Output</h3>";
+                echo "<img src='" . htmlspecialchars($webAnnotatedPath) . "' style='max-width:600px;border:2px solid #000;' />";
+            }
         }
 
     } else {
@@ -64,19 +72,6 @@ if (isset($_FILES['logo']) && $_FILES['logo']['error'] === UPLOAD_ERR_OK) {
     $errorMsg = isset($_FILES['logo']['error']) ? $_FILES['logo']['error'] : 'No file uploaded';
     echo "❌ Upload error: " . htmlspecialchars($errorMsg);
 }
-
-if (!empty($output)) {
-    echo "<h2>🧠 Logo Analysis Result</h2><pre style='background:#05013d;padding:10px;color:#fff;border:1px solid #ccc;'>" . htmlspecialchars($output) . "</pre>";
-
-    // Extract annotated image name
-    preg_match('/Annotated Image Saved: (.+\.png)/', $output, $matches);
-    if (isset($matches[1])) {
-        $annotatedFilename = trim($matches[1]);
-        echo "<h3>📸 Annotated Output</h3>";
-        echo "<img src='uploads/" . htmlspecialchars($annotatedFilename) . "' style='max-width:600px;border:2px solid #000;' />";
-    }
-}
-
 
 echo "</body></html>";
 ?>
