@@ -12,21 +12,20 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $email = $_POST['email'];
     $subject = $_POST['subject'];
 
-    // Connect to the database
-    $con = new mysqli('localhost', 'root', '', 'chroma_spark');
-
-    if ($con->connect_error) {
-        die("Connection failed: " . $con->connect_error);
+    // Connect to PostgreSQL database
+    $dbconn = pg_connect("host=your_host dbname=your_db user=your_user password=your_password port=your_port");
+    if (!$dbconn) {
+        die("Connection failed: " . pg_last_error());
     }
 
-    // Insert into database
-    $sql = "INSERT INTO contact_messages (first_name, last_name, country, email, subject) 
-            VALUES (?, ?, ?, ?, ?)";
-    $stmt = $con->prepare($sql);
-    $stmt->bind_param("sssss", $first_name, $last_name, $country, $email, $subject);
+    // Insert into database using pg_query_params to avoid SQL injection
+    $sql = "INSERT INTO contact_messages (first_name, last_name, country, email, subject) VALUES ($1, $2, $3, $4, $5)";
+    $params = array($first_name, $last_name, $country, $email, $subject);
 
-    if ($stmt->execute()) {
-        // ✅ Send email to Chroma Spark admin using PHPMailer
+    $result = pg_query_params($dbconn, $sql, $params);
+
+    if ($result) {
+        // Send email to Chroma Spark admin using PHPMailer
         $mail = new PHPMailer(true);
         try {
             // Server settings
@@ -61,11 +60,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             echo "❌ Message could not be sent. Mailer Error: {$mail->ErrorInfo}";
         }
     } else {
-        echo "❌ Database Error: " . $con->error;
+        echo "❌ Database Error: " . pg_last_error($dbconn);
     }
 
-    $stmt->close();
-    $con->close();
+    pg_close($dbconn);
 } else {
     echo "❌ Invalid Request!";
 }
