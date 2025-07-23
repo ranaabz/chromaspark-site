@@ -1,14 +1,15 @@
 <?php
-require 'connection.php'; // This should set up $dbconn for PostgreSQL
+require 'connection.php'; // Should define $dbconn using pg_connect()
 
 header('Content-Type: application/json');
 
-// Check connection
+// Ensure the database connection is available
 if (!$dbconn) {
-    echo json_encode(["error" => "Database connection failed."]);
+    echo json_encode(["error" => "❌ Database connection failed."]);
     exit;
 }
 
+// Query feedback from database
 $sql = "SELECT client_name, project_name, rating, feedback, created_at
         FROM feedback
         ORDER BY created_at DESC";
@@ -16,22 +17,24 @@ $sql = "SELECT client_name, project_name, rating, feedback, created_at
 $result = pg_query($dbconn, $sql);
 
 if (!$result) {
-    echo json_encode(["error" => "SQL Error: " . pg_last_error($dbconn)]);
+    echo json_encode(["error" => "❌ SQL Error: " . pg_last_error($dbconn)]);
     exit;
 }
 
+// Collect results
 $feedbackList = [];
 while ($row = pg_fetch_assoc($result)) {
-    // Add stars string for front-end rendering
     $row['rating_stars'] = str_repeat('★', intval($row['rating']));
     $feedbackList[] = $row;
 }
 
-if (count($feedbackList) > 0) {
+// Return data
+if (!empty($feedbackList)) {
     echo json_encode($feedbackList);
 } else {
-    echo json_encode(["error" => "No feedback available."]);
+    echo json_encode(["message" => "ℹ️ No feedback available."]);
 }
 
+// Close the connection
 pg_close($dbconn);
 ?>
