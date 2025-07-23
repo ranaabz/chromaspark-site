@@ -3,3 +3,14 @@ services:
     name: chroma-spark
     env: docker
     plan: free
+    envVars:
+      - key: DB_HOST
+        value: dpg-d209sfre5dus73d5rfsg-a
+      - key: DB_NAME
+        value: chroma_spark_nfki
+      - key: DB_USER
+        value: chroma_spark_nfki_user
+      - key: DB_PASSWORD
+        value: MJfUXNzs4727vpq98rdbLtiPRDVTrILE
+      - key: DB_PORT
+        value: 5432
