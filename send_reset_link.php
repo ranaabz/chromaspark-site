@@ -2,15 +2,9 @@
 use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
-
 require 'vendor/autoload.php'; 
 
-// Database connection
-$conn = new mysqli("localhost", "root", "", "chroma_spark");
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include 'connection.php'; // Your pg_connect in this file, defines $dbconn
 
 // Get email from POST
 $email = $_POST['email'] ?? '';
@@ -20,13 +14,11 @@ if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
     exit();
 }
 
-// Check if email exists in the clients table
-$stmt = $conn->prepare("SELECT id FROM clients WHERE email = ?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
+// Check if email exists in clients table
+$sql = "SELECT id FROM clients WHERE email = $1";
+$result = pg_query_params($dbconn, $sql, [$email]);
 
-if ($stmt->num_rows === 0) {
+if (pg_num_rows($result) === 0) {
     header("Location: forget_password.php?error=No account found with that email.");
     exit();
 }
@@ -35,30 +27,32 @@ if ($stmt->num_rows === 0) {
 $token = bin2hex(random_bytes(32));
 $expires = date("Y-m-d H:i:s", strtotime('+1 hour'));
 
-// Save token to password_resets table
-$stmt = $conn->prepare("INSERT INTO password_resets (email, token, expires_at) VALUES (?, ?, ?) 
-    ON DUPLICATE KEY UPDATE token = VALUES(token), expires_at = VALUES(expires_at)");
-$stmt->bind_param("sss", $email, $token, $expires);
-$stmt->execute();
+// Upsert token into password_resets table
+// PostgreSQL UPSERT syntax (ON CONFLICT DO UPDATE)
+$sql = "
+    INSERT INTO password_resets (email, token, expires_at)
+    VALUES ($1, $2, $3)
+    ON CONFLICT (email) DO UPDATE
+    SET token = EXCLUDED.token,
+        expires_at = EXCLUDED.expires_at
+";
+pg_query_params($dbconn, $sql, [$email, $token, $expires]);
 
-// Create reset link
-$reset_link = "http://localhost/SeniorProject/reset_password.php?token=" . urlencode($token);
-
+// Change localhost to your production domain
+$reset_link = "https://chromaspark.onrender.com/reset_password.php?token=" . urlencode($token);
 
 // Send email with PHPMailer
 $mail = new PHPMailer(true);
 
 try {
-    // SMTP config
     $mail->isSMTP();
-    $mail->Host       = 'smtp.gmail.com'; // or your SMTP host
+    $mail->Host       = 'smtp.gmail.com';
     $mail->SMTPAuth   = true;
-    $mail->Username   = 'chromaspark0@gmail.com'; // replace with your Gmail
-    $mail->Password   = 'ssiz jqwh ugze puqy';   // use app-specific password
-    $mail->SMTPSecure = 'tls';
+    $mail->Username   = 'chromaspark0@gmail.com';
+    $mail->Password   = 'ssiz jqwh ugze puqy';
+    $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
     $mail->Port       = 587;
 
-    // Email settings
     $mail->setFrom('chromaspark0@gmail.com', 'Chroma Spark');
     $mail->addAddress($email);
     $mail->isHTML(true);
@@ -69,6 +63,7 @@ try {
     ";
 
     $mail->send();
+
     header("Location: forget_password.php?success=Reset link sent. Check your email.");
     exit();
 } catch (Exception $e) {
