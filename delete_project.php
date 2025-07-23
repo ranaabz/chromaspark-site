@@ -1,19 +1,16 @@
 <?php
-include 'AdminPanel.php'; // Include database connection
+include 'connection.php'; // This file should establish a PostgreSQL connection and store in $dbconn
 
-// Ensure that the id is an integer (sanitize input)
+// Sanitize input
 $id = intval($_POST['id']); 
 
-// Use prepared statement to prevent SQL injection
-$sql = "DELETE FROM projects WHERE id = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param('i', $id);  // 'i' indicates the type is an integer
+// Prepare and execute delete query
+$sql = "DELETE FROM projects WHERE id = $1";
+$result = pg_query_params($dbconn, $sql, array($id));
 
-if ($stmt->execute()) {
+if ($result) {
     echo "Project deleted successfully!";
 } else {
-    echo "Error: " . $conn->error;
+    echo "Error: " . pg_last_error($dbconn);
 }
-
-$stmt->close();
 ?>
