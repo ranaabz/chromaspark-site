@@ -1,13 +1,22 @@
 <?php
-require "AdminPanel.php"; // Ensure your database connection file is correct
+require "connection.php"; 
+
+header('Content-Type: application/json');
 
 $sql = "SELECT id, name, description, image_url FROM projects";
-$result = $conn->query($sql);
+$result = pg_query($dbconn, $sql);
+
+if (!$result) {
+    echo json_encode(["error" => "SQL Error: " . pg_last_error($dbconn)]);
+    exit;
+}
 
 $projects = [];
-while ($row = $result->fetch_assoc()) {
+while ($row = pg_fetch_assoc($result)) {
     $projects[] = $row;
 }
 
 echo json_encode($projects);
+
+pg_close($dbconn);
 ?>
