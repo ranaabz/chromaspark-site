@@ -1,45 +1,37 @@
 <?php
-header("Content-Type: application/json"); // Ensure correct response type
+header("Content-Type: application/json");
 
-// Database Connection
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "chroma_spark";
+include 'connection.php'; // defines $dbconn with pg_connect
 
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// Check for connection errors
-if ($conn->connect_error) {
-    die(json_encode(["success" => false, "error" => "Database Connection Failed"]));
-}
-
-// Get the JSON input
+// Get JSON input
 $data = json_decode(file_get_contents("php://input"));
 
-// Validate if data exists
-if (!$data || !isset($data->client_name) || !isset($data->project_name) || !isset($data->rating) || !isset($data->feedback)) {
+if (!$data || 
+    !isset($data->client_name) || 
+    !isset($data->project_name) || 
+    !isset($data->rating) || 
+    !isset($data->feedback)) {
     echo json_encode(["success" => false, "error" => "Invalid data provided"]);
     exit();
 }
 
-// Retrieve sanitized feedback data
-$client_name = $conn->real_escape_string($data->client_name);
-$project_name = $conn->real_escape_string($data->project_name);
-$rating = (int) $data->rating;
-$feedback = $conn->real_escape_string($data->feedback);
+$client_name = trim($data->client_name);
+$project_name = trim($data->project_name);
+$rating = intval($data->rating);
+$feedback = trim($data->feedback);
 
+// Basic validation can be added here
 
-// Insert the feedback into the feedback table
-$sql = "INSERT INTO feedback (client_name, project_name, rating, feedback) 
-        VALUES ('$client_name', '$project_name', $rating, '$feedback')";
+$sql = "INSERT INTO feedback (client_name, project_name, rating, feedback, created_at, updated_at)
+        VALUES ($1, $2, $3, $4, NOW(), NOW())";
 
-if ($conn->query($sql) === TRUE) {
+$params = [$client_name, $project_name, $rating, $feedback];
+
+$result = pg_query_params($dbconn, $sql, $params);
+
+if ($result) {
     echo json_encode(["success" => true]);
 } else {
-    echo json_encode(["success" => false, "error" => $conn->error]);
+    echo json_encode(["success" => false, "error" => pg_last_error($dbconn)]);
 }
-
-// Close the connection
-$conn->close();
 ?>
